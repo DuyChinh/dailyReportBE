@@ -301,18 +301,21 @@ const searchTasks = async (req, res) => {
 // @access  Private
 const getMyTasks = async (req, res) => {
   try {
-    const { status = 'pending,in_progress', limit = 50 } = req.query;
+    // If no status specified, include all statuses by default
+    const { status , limit = 50 } = req.query;
 
     const filter = {
       isActive: true,
       assignedTo: req.user.id,
-      status: { $in: status.split(',') }
+      // status: { $in: status.split(',') }
     };
 
     const tasks = await Task.find(filter)
       .select('title status priority dueDate category')
       .sort({ dueDate: 1, priority: -1 })
       .limit(parseInt(limit));
+
+    console.log(tasks);
 
     res.json({
       success: true,
